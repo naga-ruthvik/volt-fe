@@ -19,7 +19,7 @@ import {
 } from "lucide-react";
 import { useState, useEffect, type FC, useRef } from "react";
 import { motion, useInView } from "motion/react";
-import Noise from './Noise';
+import Noise from "./components/Noise";
 
 const PLATFORMS = [
   "GITHUB", "LEETCODE", "CODECHEF", "GEEKSFORGEEKS", "CODEFORCES", "INTERVIEWBIT"
@@ -123,20 +123,31 @@ export default function App() {
       <section className="relative pt-24 pb-4 overflow-hidden min-h-[65vh] flex flex-col justify-center z-10">
         <div className="max-w-7xl mx-auto px-6">
           <motion.div 
-            initial={{ opacity: 0, y: 30 }}
+            initial={{ opacity: 0, y: 40 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8 }}
+            transition={{ duration: 1.2, ease: "easeInOut" }}
             className="max-w-4xl"
           >
             <h1 className="text-6xl md:text-8xl lg:text-9xl font-medium tracking-tighter mb-4 leading-[0.9] uppercase text-white">
               Your Coding <br /> Journey, <br />
-              <span className="relative inline-block">
-                <span className="text-gradient-pink tracking-[0.05em]">UNIFIED</span>
+              <span className="relative inline-block pb-4">
+                {/* The wrapper with mix-blend-screen removes the black background from the text layer */}
+                <span className="relative inline-block mix-blend-screen isolate pr-4">
+                  {/* Canvas Layer */}
+                  <div className="absolute inset-0 z-0 pointer-events-none overflow-hidden">
+                    <Noise patternRefreshInterval={3} />
+                  </div>
+                  {/* Text Layer - Extended padding with negative margin fixes the sub-pixel edge bleed completely */}
+                  <span className="relative z-10 block bg-black text-[#ff0066] mix-blend-multiply tracking-[0.05em] px-8 -mx-8 py-2 -my-2 selection:bg-[#ff0066] selection:text-white">
+                    UNIFIED
+                  </span>
+                </span>
+                
                 <motion.span 
                   initial={{ width: 0 }}
                   animate={{ width: "100%" }}
-                  transition={{ delay: 0.5, duration: 1.5, ease: [0.77, 0, 0.175, 1] }}
-                  className="absolute -bottom-2 left-0 h-2 bg-brand-pink"
+                  transition={{ delay: 0.5, duration: 1.5, ease: "easeInOut" }}
+                  className="absolute bottom-2 left-0 h-2 bg-brand-pink z-20 pointer-events-none"
                 />
               </span>
             </h1>
