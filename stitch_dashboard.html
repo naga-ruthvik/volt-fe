@@ -1,0 +1,298 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Volt Authenticated Dashboard</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Epilogue:wght@700;800&amp;family=Space+Grotesk:wght@400;500;700&amp;family=Inter:wght@400&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "on-primary-fixed": "#1a1c1c",
+                        "on-error-container": "#ffdad6",
+                        "on-secondary-fixed-variant": "#474746",
+                        "surface-container": "#1f2020",
+                        "primary": "#ffffff",
+                        "secondary-container": "#474746",
+                        "error-container": "#93000a",
+                        "surface": "#131314",
+                        "primary-fixed-dim": "#c6c6c7",
+                        "primary-container": "#e2e2e2",
+                        "on-tertiary": "#2f3131",
+                        "error": "#ffb4ab",
+                        "on-secondary-fixed": "#1c1b1b",
+                        "on-error": "#690005",
+                        "surface-variant": "#343535",
+                        "tertiary-container": "#e2e2e2",
+                        "secondary-fixed-dim": "#c8c6c5",
+                        "secondary": "#c8c6c5",
+                        "on-tertiary-container": "#636565",
+                        "on-background": "#e4e2e2",
+                        "inverse-surface": "#e4e2e2",
+                        "on-primary-container": "#636565",
+                        "on-primary": "#2f3131",
+                        "outline-variant": "#444748",
+                        "primary-fixed": "#e2e2e2",
+                        "on-surface-variant": "#c4c7c8",
+                        "surface-tint": "#c6c6c7",
+                        "surface-container-highest": "#343535",
+                        "inverse-primary": "#5d5f5f",
+                        "surface-bright": "#393939",
+                        "on-secondary": "#313030",
+                        "background": "#131314",
+                        "surface-container-lowest": "#0d0e0e",
+                        "surface-container-low": "#1b1c1c",
+                        "outline": "#8e9192",
+                        "on-secondary-container": "#b7b5b4",
+                        "inverse-on-surface": "#303031",
+                        "on-primary-fixed-variant": "#454747",
+                        "on-tertiary-fixed-variant": "#454747",
+                        "on-tertiary-fixed": "#1a1c1c",
+                        "tertiary-fixed-dim": "#c6c6c7",
+                        "on-surface": "#e4e2e2",
+                        "tertiary-fixed": "#e2e2e2",
+                        "surface-container-high": "#292a2a",
+                        "secondary-fixed": "#e5e2e1",
+                        "tertiary": "#ffffff",
+                        "surface-dim": "#131314"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0",
+                        "lg": "0",
+                        "xl": "0",
+                        "full": "0"
+                    },
+                    "spacing": {
+                        "grid_columns": "12",
+                        "xs": "8px",
+                        "md": "24px",
+                        "sm": "16px",
+                        "base": "4px",
+                        "xl": "80px",
+                        "lg": "48px",
+                        "gutter": "1px"
+                    },
+                    "fontFamily": {
+                        "headline-xl": ["Epilogue"],
+                        "technical-data": ["Space Grotesk"],
+                        "headline-lg": ["Epilogue"],
+                        "mono-label": ["Space Grotesk"],
+                        "body-md": ["Inter"]
+                    },
+                    "fontSize": {
+                        "headline-xl": ["72px", { "lineHeight": "1.0", "letterSpacing": "-0.04em", "fontWeight": "800" }],
+                        "technical-data": ["14px", { "lineHeight": "1.0", "letterSpacing": "0em", "fontWeight": "400" }],
+                        "headline-lg": ["40px", { "lineHeight": "1.1", "letterSpacing": "-0.02em", "fontWeight": "700" }],
+                        "mono-label": ["12px", { "lineHeight": "1.2", "letterSpacing": "0.1em", "fontWeight": "500" }],
+                        "body-md": ["16px", { "lineHeight": "1.5", "letterSpacing": "0em", "fontWeight": "400" }]
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+        body {
+            background-color: #000;
+            background-image: 
+                linear-gradient(rgba(255, 255, 255, 0.05) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(255, 255, 255, 0.05) 1px, transparent 1px);
+            background-size: 20px 20px;
+        }
+        .noise-bg::before {
+            content: "";
+            position: fixed;
+            top: 0; left: 0; width: 100vw; height: 100vh;
+            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='0.06'/%3E%3C/svg%3E");
+            pointer-events: none;
+            z-index: 9999;
+        }
+        
+        /* Text Hollow / Outline effect */
+        .text-outline {
+            color: transparent;
+            -webkit-text-stroke: 1px #fff;
+        }
+
+        /* Hover bracket effect */
+        .hover-bracket:hover::before { content: "[ "; color: #fff; }
+        .hover-bracket:hover::after { content: " ]"; color: #fff; }
+
+        .crosshair-tl { position: absolute; top: 0; left: 0; width: 8px; height: 8px; border-top: 1px solid #fff; border-left: 1px solid #fff; }
+        .crosshair-tr { position: absolute; top: 0; right: 0; width: 8px; height: 8px; border-top: 1px solid #fff; border-right: 1px solid #fff; }
+        .crosshair-bl { position: absolute; bottom: 0; left: 0; width: 8px; height: 8px; border-bottom: 1px solid #fff; border-left: 1px solid #fff; }
+        .crosshair-br { position: absolute; bottom: 0; right: 0; width: 8px; height: 8px; border-bottom: 1px solid #fff; border-right: 1px solid #fff; }
+        
+        .terminal-header { background: #000; border-bottom: 1px solid #343535; height: 24px; display: flex; align-items: center; justify-content: space-between; padding: 0 8px; }
+        .glow-active { box-shadow: 0 0 20px #ffffff; background-color: #ffffff !important; }
+        
+        .heat-0 { background-color: #1a1a1a; }
+        .heat-1 { background-color: #4a4a4a; }
+        .heat-2 { background-color: #8a8a8a; }
+        .heat-3 { background-color: #c0c0c0; }
+        .heat-4 { background-color: #ffffff; box-shadow: 0 0 20px #ffffff; }
+        
+        /* Hide scrollbar for heatmap */
+        .custom-scrollbar::-webkit-scrollbar { display: none; }
+        .custom-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+        
+        .text-glow { text-shadow: 0 0 10px rgba(255,255,255,0.8); }
+    </style>
+</head>
+<body class="bg-black text-white font-mono-label min-h-screen noise-bg flex overflow-hidden">
+<!-- TopAppBar for Mobile (Hidden on Desktop) -->
+<nav class="md:hidden flex justify-between items-center px-sm h-12 border-b border-surface-variant bg-black fixed top-0 w-full z-50">
+<div class="text-white font-bold tracking-widest text-[16px]">VOLT_CORE_V1</div>
+<div class="flex gap-xs">
+<span class="material-symbols-outlined text-zinc-400" style="font-variation-settings: 'FILL' 0;">notifications_active</span>
+<span class="material-symbols-outlined text-zinc-400" style="font-variation-settings: 'FILL' 0;">settings_input_component</span>
+<span class="material-symbols-outlined text-zinc-400" style="font-variation-settings: 'FILL' 0;">power_settings_new</span>
+</div>
+</nav>
+<!-- SideNavBar -->
+<aside class="hidden md:flex flex-col h-screen w-64 border-r border-surface-variant bg-black fixed left-0 top-0 z-40">
+<div class="p-sm border-b border-surface-variant flex items-center gap-sm">
+<img alt="User System Avatar" class="w-12 h-12 grayscale" data-alt="Black and white high contrast portrait of a user in technical gear" src="https://lh3.googleusercontent.com/aida-public/AB6AXuC1-810jVZTKQeyQkvrQwqDg71Z-OxebuEXQiPigmEXie_1JOfV9Kpjmu7SLid9iA4Vq2v2Fzscqennk8vRxEvNhldjnPPrM6Zeh9mXjDaJHVRQGyTVKbU6kApQA6VcNwpy6ict9CWwiaEeyvH1qA7WDvcbVxNkpMWGiRcQ6vGqGFlFX0MdtXjwF5dm86I9IXdemB6KVzlSw5rwMTQ0LNm106LTcs2zqHYx0U-o0AEgajO2og9b-Iqv_CcGxGW8oEx3XlH17chE4mE"/>
+<div class="flex flex-col">
+<span class="text-white tracking-[0.3em] font-bold text-[12px]">VOLT_OS</span>
+<span class="text-outline tracking-widest text-[10px] font-bold">[USR_01_AUTH]</span>
+</div>
+</div>
+<nav class="flex-1 overflow-y-auto py-sm flex flex-col">
+<a class="text-zinc-500 p-sm flex items-center gap-sm border-b border-surface-variant hover:text-white transition-all duration-75" href="#">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 0;">dashboard</span>
+<span class="tracking-[0.3em] uppercase text-[10px] font-bold">DASHBOARD</span>
+</a>
+<a class="bg-white text-black p-sm flex items-center gap-sm" href="#">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">query_stats</span>
+<span class="tracking-[0.3em] uppercase text-[10px] font-bold">ANALYTICS</span>
+</a>
+<a class="text-zinc-500 p-sm flex items-center gap-sm border-b border-surface-variant hover:text-white transition-all duration-75" href="#">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 0;">hub</span>
+<span class="tracking-[0.3em] uppercase text-[10px] font-bold">CONNECTIONS</span>
+</a>
+<a class="text-zinc-500 p-sm flex items-center gap-sm border-b border-surface-variant hover:text-white transition-all duration-75" href="#">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 0;">terminal</span>
+<span class="tracking-[0.3em] uppercase text-[10px] font-bold">SYSTEM_LOGS</span>
+</a>
+<a class="text-zinc-500 p-sm flex items-center gap-sm border-b border-surface-variant hover:text-white transition-all duration-75" href="#">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 0;">settings</span>
+<span class="tracking-[0.3em] uppercase text-[10px] font-bold">SETTINGS</span>
+</a>
+<div class="mt-auto px-sm py-sm">
+<button class="w-full bg-black text-white border border-white p-sm text-[10px] tracking-[0.3em] uppercase hover:bg-white hover:text-black transition-all hover-bracket font-bold">EXECUTE_SCAN</button>
+</div>
+</nav>
+</aside>
+<!-- Main Content -->
+<main class="flex-1 md:ml-64 mt-12 md:mt-0 p-md overflow-y-auto relative z-10">
+<div class="max-w-[1200px] mx-auto space-y-md">
+<!-- Header -->
+<header class="flex justify-between items-end pb-xs">
+<h1 class="font-bold text-5xl tracking-tighter uppercase text-white">ANALYTICS_OVERVIEW</h1>
+<div class="tracking-[0.3em] text-[10px] text-zinc-400 uppercase">SYS_TIME: 14:02:45 UTC</div>
+</header>
+<!-- KPI Cards -->
+<div class="grid grid-cols-1 md:grid-cols-3 gap-gutter">
+<!-- Card 1 -->
+<div class="bg-black border border-surface-variant relative p-sm">
+<div class="crosshair-tl"></div><div class="crosshair-tr"></div><div class="crosshair-bl"></div><div class="crosshair-br"></div>
+<div class="terminal-header -mx-sm -mt-sm mb-sm border-b border-surface-variant">
+<span class="text-[10px] tracking-[0.3em] text-zinc-400 font-bold">KPI_01</span>
+<div class="flex gap-[2px]">
+<div class="w-[4px] h-[4px] bg-white"></div>
+<div class="w-[4px] h-[4px] bg-surface-variant"></div>
+<div class="w-[4px] h-[4px] bg-surface-variant"></div>
+</div>
+</div>
+<div class="text-[10px] tracking-[0.3em] text-zinc-400 uppercase font-bold">Total Activities</div>
+<div class="text-8xl font-bold tracking-tighter text-white mt-xs">1,204</div>
+</div>
+<!-- Card 2 -->
+<div class="bg-black border border-surface-variant relative p-sm">
+<div class="crosshair-tl"></div><div class="crosshair-tr"></div><div class="crosshair-bl"></div><div class="crosshair-br"></div>
+<div class="terminal-header -mx-sm -mt-sm mb-sm border-b border-surface-variant">
+<span class="text-[10px] tracking-[0.3em] text-zinc-400 font-bold">KPI_02</span>
+<div class="flex gap-[2px]">
+<div class="w-[4px] h-[4px] bg-surface-variant"></div>
+<div class="w-[4px] h-[4px] bg-white"></div>
+<div class="w-[4px] h-[4px] bg-surface-variant"></div>
+</div>
+</div>
+<div class="text-[10px] tracking-[0.3em] text-zinc-400 uppercase font-bold">Current Streak</div>
+<div class="text-8xl font-bold tracking-tighter text-white mt-xs flex items-baseline gap-2">14<span class="text-4xl text-glow text-white">D</span></div>
+</div>
+<!-- Card 3 -->
+<div class="bg-black border border-surface-variant relative p-sm">
+<div class="crosshair-tl"></div><div class="crosshair-tr"></div><div class="crosshair-bl"></div><div class="crosshair-br"></div>
+<div class="terminal-header -mx-sm -mt-sm mb-sm border-b border-surface-variant">
+<span class="text-[10px] tracking-[0.3em] text-zinc-400 font-bold">KPI_03</span>
+<div class="flex gap-[2px]">
+<div class="w-[4px] h-[4px] bg-surface-variant"></div>
+<div class="w-[4px] h-[4px] bg-surface-variant"></div>
+<div class="w-[4px] h-[4px] bg-white"></div>
+</div>
+</div>
+<div class="text-[10px] tracking-[0.3em] text-zinc-400 uppercase font-bold">Longest Streak</div>
+<div class="text-8xl font-bold tracking-tighter text-white mt-xs flex items-baseline gap-2">82<span class="text-4xl text-glow text-white">D</span></div>
+</div>
+</div>
+<!-- Heatmap Section -->
+<section class="border border-surface-variant bg-black relative mt-lg w-full">
+<div class="crosshair-tl"></div><div class="crosshair-tr"></div><div class="crosshair-bl"></div><div class="crosshair-br"></div>
+<div class="terminal-header border-b border-surface-variant">
+<span class="text-[10px] tracking-[0.3em] text-white font-bold">52_WEEK_HEATMAP</span>
+<div class="flex gap-[2px]">
+<div class="w-[4px] h-[4px] bg-white"></div>
+<div class="w-[4px] h-[4px] bg-white"></div>
+<div class="w-[4px] h-[4px] bg-white"></div>
+</div>
+</div>
+<div class="p-md">
+<div class="flex items-center gap-xs mb-sm">
+<span class="text-[10px] tracking-[0.3em] text-zinc-400 font-bold">■ ACTIVE_DATA_STREAM</span>
+</div>
+<!-- Month Annotations -->
+<div class="flex gap-12 text-[8px] tracking-[0.5em] text-zinc-500 mb-2 ml-4">
+<span>JAN</span><span>FEB</span><span>MAR</span><span>APR</span><span>MAY</span><span>JUN</span><span>JUL</span><span>AUG</span><span>SEP</span><span>OCT</span><span>NOV</span><span>DEC</span>
+</div>
+<!-- Simulated Heatmap Grid -->
+<div class="flex gap-[2px] overflow-x-auto pb-sm custom-scrollbar w-full">
+<!-- 52 weeks simulation -->
+<script>
+    // Just simulating a large grid here for visual effect without taking up 1000 lines
+    for(let i=0; i<52; i++) {
+        document.write('<div class="flex flex-col gap-[2px]">');
+        for(let j=0; j<7; j++) {
+            let heatLevel = Math.floor(Math.random() * 5);
+            let heatClass = `heat-${heatLevel}`;
+            document.write(`<div class="w-3 h-3 ${heatClass}"></div>`);
+        }
+        document.write('</div>');
+    }
+</script>
+</div>
+<!-- Legend -->
+<div class="mt-4 flex items-center gap-2 text-[8px] tracking-[0.5em] text-zinc-500">
+<span>LESS</span>
+<div class="w-3 h-3 heat-0"></div>
+<div class="w-3 h-3 heat-1"></div>
+<div class="w-3 h-3 heat-2"></div>
+<div class="w-3 h-3 heat-3"></div>
+<div class="w-3 h-3 heat-4"></div>
+<span>MORE</span>
+</div>
+</div>
+<!-- Controls -->
+<div class="border-t border-surface-variant p-sm flex justify-end gap-sm bg-black">
+<button class="bg-black border border-white text-white px-md py-xs tracking-[0.3em] text-[10px] uppercase hover:bg-white hover:text-black transition-colors font-bold">DOWNLOAD SVG</button>
+<button class="bg-white text-black px-md py-xs tracking-[0.3em] text-[10px] uppercase hover:bg-black hover:text-white border border-transparent hover:border-white transition-all font-bold">GENERATE EMBED LINK</button>
+</div>
+</section>
+</div>
+</main>
+</body></html>
