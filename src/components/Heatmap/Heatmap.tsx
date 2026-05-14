@@ -5,9 +5,31 @@ import { HeatmapGrid } from './HeatmapGrid';
 import { HeatmapLegend } from './HeatmapLegend';
 import { generateHeatmapSvgString, downloadSvg } from '../../utils/svgGenerator';
 
-export const Heatmap: React.FC = () => {
-  const { data, isLoading, error } = useHeatmapData();
+export const Heatmap: React.FC<{ isDemo?: boolean }> = ({ isDemo = false }) => {
+  const { data: realData, isLoading: isRealLoading, error: realError } = useHeatmapData(isDemo);
   const [theme, setTheme] = useState('MONOCHROME');
+
+  // If in demo mode, create some random data on the fly and disable loading/errors
+  const [demoData] = useState(() => {
+    if (!isDemo) return null;
+    const data: any = {};
+    const today = new Date();
+    for (let i = 0; i < 365; i++) {
+      const d = new Date(today);
+      d.setDate(d.getDate() - i);
+      const dateStr = d.toISOString().split('T')[0];
+      // 40% chance of activity to look reasonably busy
+      if (Math.random() > 0.6) {
+        const count = Math.floor(Math.random() * 15) + 1;
+        data[dateStr] = { date: dateStr, total: count, sources: { GITHUB: count } };
+      }
+    }
+    return data;
+  });
+
+  const data = isDemo ? demoData : realData;
+  const isLoading = isDemo ? false : isRealLoading;
+  const error = isDemo ? null : realError;
 
   const handleDownloadSvg = () => {
     if (!data) return;

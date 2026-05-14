@@ -2,12 +2,16 @@ import { useState, useEffect } from 'react';
 import { fetchHeatmapData } from '../services/heatmap';
 import type { HeatmapData } from '../types/heatmap';
 
-export const useHeatmapData = () => {
+export const useHeatmapData = (skipFetch: boolean = false) => {
   const [data, setData] = useState<HeatmapData>({});
-  const [isLoading, setIsLoading] = useState(true);
+  const [isLoading, setIsLoading] = useState(!skipFetch);
   const [error, setError] = useState<Error | null>(null);
 
   useEffect(() => {
+    if (skipFetch) {
+      setIsLoading(false);
+      return;
+    }
     let mounted = true;
 
     const loadData = async () => {
