@@ -1,0 +1,601 @@
+openapi: 3.0.3
+info:
+  title: ''
+  version: 0.0.0
+paths:
+  /{username}/{platform_username}/{platform}/:
+    get:
+      operationId: root_retrieve
+      parameters:
+      - in: path
+        name: platform
+        schema:
+          type: string
+        required: true
+      - in: path
+        name: platform_username
+        schema:
+          type: string
+        required: true
+      - in: path
+        name: username
+        schema:
+          type: string
+        required: true
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PlatformList'
+          description: ''
+    put:
+      operationId: root_update
+      parameters:
+      - in: path
+        name: platform
+        schema:
+          type: string
+        required: true
+      - in: path
+        name: platform_username
+        schema:
+          type: string
+        required: true
+      - in: path
+        name: username
+        schema:
+          type: string
+        required: true
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PlatformUpdate'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PlatformUpdate'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PlatformUpdate'
+        required: true
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PlatformUpdate'
+          description: ''
+    patch:
+      operationId: root_partial_update
+      parameters:
+      - in: path
+        name: platform
+        schema:
+          type: string
+        required: true
+      - in: path
+        name: platform_username
+        schema:
+          type: string
+        required: true
+      - in: path
+        name: username
+        schema:
+          type: string
+        required: true
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedPlatformUpdate'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedPlatformUpdate'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedPlatformUpdate'
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PlatformUpdate'
+          description: ''
+    delete:
+      operationId: root_destroy
+      parameters:
+      - in: path
+        name: platform
+        schema:
+          type: string
+        required: true
+      - in: path
+        name: platform_username
+        schema:
+          type: string
+        required: true
+      - in: path
+        name: username
+        schema:
+          type: string
+        required: true
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      - {}
+      responses:
+        '204':
+          description: No response body
+  /{username}/platforms/:
+    get:
+      operationId: platforms_list
+      parameters:
+      - in: path
+        name: username
+        schema:
+          type: string
+        required: true
+      tags:
+      - platforms
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/PlatformList'
+          description: ''
+    post:
+      operationId: platforms_create
+      parameters:
+      - in: path
+        name: username
+        schema:
+          type: string
+        required: true
+      tags:
+      - platforms
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PlatformCreate'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PlatformCreate'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PlatformCreate'
+        required: true
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PlatformCreate'
+          description: ''
+  /activities/{username}/:
+    get:
+      operationId: activities_list
+      parameters:
+      - in: path
+        name: username
+        schema:
+          type: string
+        required: true
+      tags:
+      - activities
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ActivityList'
+          description: ''
+    post:
+      operationId: activities_create
+      parameters:
+      - in: path
+        name: username
+        schema:
+          type: string
+        required: true
+      tags:
+      - activities
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ActivityList'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/ActivityList'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/ActivityList'
+        required: true
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      - {}
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ActivityList'
+          description: ''
+  /api/schema/:
+    get:
+      operationId: api_schema_retrieve
+      description: |-
+        OpenApi3 schema for this API. Format can be selected via content negotiation.
+
+        - YAML: application/vnd.oai.openapi
+        - JSON: application/vnd.oai.openapi+json
+      parameters:
+      - in: query
+        name: format
+        schema:
+          type: string
+          enum:
+          - json
+          - yaml
+      - in: query
+        name: lang
+        schema:
+          type: string
+          enum:
+          - af
+          - ar
+          - ar-dz
+          - ast
+          - az
+          - be
+          - bg
+          - bn
+          - br
+          - bs
+          - ca
+          - ckb
+          - cs
+          - cy
+          - da
+          - de
+          - dsb
+          - el
+          - en
+          - en-au
+          - en-gb
+          - eo
+          - es
+          - es-ar
+          - es-co
+          - es-mx
+          - es-ni
+          - es-ve
+          - et
+          - eu
+          - fa
+          - fi
+          - fr
+          - fy
+          - ga
+          - gd
+          - gl
+          - he
+          - hi
+          - hr
+          - hsb
+          - ht
+          - hu
+          - hy
+          - ia
+          - id
+          - ig
+          - io
+          - is
+          - it
+          - ja
+          - ka
+          - kab
+          - kk
+          - km
+          - kn
+          - ko
+          - ky
+          - lb
+          - lt
+          - lv
+          - mk
+          - ml
+          - mn
+          - mr
+          - ms
+          - my
+          - nb
+          - ne
+          - nl
+          - nn
+          - os
+          - pa
+          - pl
+          - pt
+          - pt-br
+          - ro
+          - ru
+          - sk
+          - sl
+          - sq
+          - sr
+          - sr-latn
+          - sv
+          - sw
+          - ta
+          - te
+          - tg
+          - th
+          - tk
+          - tr
+          - tt
+          - udm
+          - ug
+          - uk
+          - ur
+          - uz
+          - vi
+          - zh-hans
+          - zh-hant
+      tags:
+      - api
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/vnd.oai.openapi:
+              schema:
+                type: object
+                additionalProperties: {}
+            application/yaml:
+              schema:
+                type: object
+                additionalProperties: {}
+            application/vnd.oai.openapi+json:
+              schema:
+                type: object
+                additionalProperties: {}
+            application/json:
+              schema:
+                type: object
+                additionalProperties: {}
+          description: ''
+  /generate/:
+    post:
+      operationId: generate_create
+      tags:
+      - generate
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/GenerateRequestsCreate'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/GenerateRequestsCreate'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/GenerateRequestsCreate'
+        required: true
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      - {}
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GenerateRequestsCreate'
+          description: ''
+  /logout/:
+    post:
+      operationId: logout_create
+      tags:
+      - logout
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          description: No response body
+  /metrics/{username}/:
+    get:
+      operationId: metrics_retrieve
+      parameters:
+      - in: path
+        name: username
+        schema:
+          type: string
+        required: true
+      tags:
+      - metrics
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      - {}
+      responses:
+        '200':
+          description: No response body
+  /otp/generate/:
+    post:
+      operationId: otp_generate_create
+      tags:
+      - otp
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      - {}
+      responses:
+        '200':
+          description: No response body
+  /otp/verify/:
+    post:
+      operationId: otp_verify_create
+      tags:
+      - otp
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      - {}
+      responses:
+        '200':
+          description: No response body
+  /profile/complete/:
+    post:
+      operationId: profile_complete_create
+      tags:
+      - profile
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          description: No response body
+  /refresh/:
+    post:
+      operationId: refresh_create
+      tags:
+      - refresh
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      - {}
+      responses:
+        '200':
+          description: No response body
+components:
+  schemas:
+    ActivityList:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        platform:
+          $ref: '#/components/schemas/PlatformEnum'
+        activity_date:
+          type: string
+          format: date
+        activity_count:
+          type: integer
+          maximum: 2147483647
+          minimum: -2147483648
+        metadata:
+          nullable: true
+      required:
+      - activity_date
+      - id
+      - platform
+    GenerateRequestsCreate:
+      type: object
+      properties:
+        username:
+          type: string
+      required:
+      - username
+    PatchedPlatformUpdate:
+      type: object
+      properties:
+        username:
+          type: string
+          maxLength: 100
+    PlatformCreate:
+      type: object
+      properties:
+        user:
+          type: string
+          format: uuid
+        platform:
+          $ref: '#/components/schemas/PlatformEnum'
+        username:
+          type: string
+          maxLength: 100
+      required:
+      - platform
+      - user
+      - username
+    PlatformEnum:
+      enum:
+      - codeforces
+      - codechef
+      - leetcode
+      - hackerrank
+      - github
+      type: string
+      description: |-
+        * `codeforces` - Codeforces
+        * `codechef` - CodeChef
+        * `leetcode` - LeetCode
+        * `hackerrank` - HackerRank
+        * `github` - GitHub
+    PlatformList:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        platform:
+          $ref: '#/components/schemas/PlatformEnum'
+        username:
+          type: string
+          maxLength: 100
+      required:
+      - id
+      - platform
+      - username
+    PlatformUpdate:
+      type: object
+      properties:
+        username:
+          type: string
+          maxLength: 100
+      required:
+      - username
+  securitySchemes:
+    cookieAuth:
+      type: apiKey
+      in: cookie
+      name: sessionid
+    jwtAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
