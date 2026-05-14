@@ -21,6 +21,7 @@ import { useState, useEffect, type FC, useRef } from "react";
 import { motion, useInView } from "motion/react";
 import { Link } from "react-router-dom";
 import Noise from "../components/Noise";
+import LoginModal from "../components/LoginModal";
 import { Heatmap } from "../components/Heatmap";
 
 const PLATFORMS = [
@@ -50,6 +51,7 @@ const TESTIMONIALS = [
 
 export default function Landing() {
   const [activeFilter, setActiveFilter] = useState("ALL");
+  const [isLoginOpen, setIsLoginOpen] = useState(false);
 
   return (
     <div className="min-h-screen">
@@ -72,9 +74,13 @@ export default function Landing() {
             ))}
           </div>
 
-          <Link to="/dashboard" className="px-6 py-2 text-[10px] font-bold uppercase tracking-[0.2em] border border-white/20 hover:border-white hover:text-white transition-all glass-card">
+          <button
+            onClick={() => setIsLoginOpen(true)}
+            id="nav-login-button"
+            className="px-6 py-2 text-[10px] font-bold uppercase tracking-[0.2em] border border-white/20 hover:border-white hover:text-white transition-all glass-card"
+          >
             Login
-          </Link>
+          </button>
         </div>
       </nav>
 
@@ -215,7 +221,7 @@ export default function Landing() {
               </div>
             </div>
 
-            <Heatmap />
+            <Heatmap isDemo={true} />
           </motion.div>
         </div>
       </section>
@@ -356,6 +362,9 @@ export default function Landing() {
           </div>
         </div>
       </footer>
+
+      {/* Login Modal */}
+      <LoginModal isOpen={isLoginOpen} onClose={() => setIsLoginOpen(false)} />
     </div>
   );
 }
