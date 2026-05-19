@@ -6,13 +6,12 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import {
-  Github, Code, Trophy, Braces, Award, Cpu, Edit2,
+  Github, Code, Trophy, Braces, Award, Cpu,
   Plus, ChevronRight, Trash2, RefreshCw, Loader2,
 } from 'lucide-react';
-import { usePlatforms } from '../../hooks/usePlatforms';
+import { usePlatforms, useCreatePlatform, useDeletePlatform } from '../../features/platforms/hooks/usePlatforms';
 
 // ── Platform metadata ─────────────────────────────────────────────────────────
-// Mirrors Django's Platform.TextChoices exactly.
 
 const PLATFORM_META: Record<string, { icon: React.FC<{ className?: string }>; label: string }> = {
   codeforces: { icon: Trophy, label: 'CODEFORCES' },
@@ -40,7 +39,6 @@ const SkeletonRow: React.FC = () => (
   </div>
 );
 
-// Inline form for adding a username after selecting a platform
 const AddUsernameForm: React.FC<{
   platform: string;
   onSubmit: (username: string) => void;
@@ -88,12 +86,12 @@ const AddUsernameForm: React.FC<{
 // ── Main View ─────────────────────────────────────────────────────────────────
 
 export const ProfilesView: React.FC = () => {
-  const { platforms, loading, error, submitting, addPlatform, editPlatform, removePlatform, refetch } = usePlatforms();
+  const { data: platforms = [], isLoading: loading, error, refetch } = usePlatforms();
+  const { mutateAsync: addPlatform, isPending: creating } = useCreatePlatform();
+  const { mutateAsync: removePlatform, isPending: deleting, variables: deletedPlatform } = useDeletePlatform();
+  
   const [showAdd, setShowAdd] = useState(false);
   const [selectedPlatform, setSelectedPlatform] = useState<string | null>(null);
-  const [deleteTarget, setDeleteTarget] = useState<string | null>(null);
-  const [editTarget, setEditTarget] = useState<string | null>(null);
-  const [editUsername, setEditUsername] = useState('');
 
   const linked = new Set(platforms.map(p => p.platform.toLowerCase()));
   const available = ALL_SUPPORTED.filter(p => !linked.has(p));
@@ -105,7 +103,7 @@ export const ProfilesView: React.FC = () => {
   const handleAddSubmit = async (username: string) => {
     if (!selectedPlatform) return;
     try {
-      await addPlatform(selectedPlatform, username);
+      await addPlatform({ platform: selectedPlatform, username });
       setShowAdd(false);
       setSelectedPlatform(null);
     } catch (err: any) {
@@ -113,30 +111,16 @@ export const ProfilesView: React.FC = () => {
     }
   };
 
-  const handleEditSubmit = async (platform: string, username: string) => {
-    if (!username.trim()) return;
-    try {
-      await editPlatform(platform, username);
-      setEditTarget(null);
-    } catch (err: any) {
-      alert(`Error: ${err.message}`);
-    }
-  };
-
   const handleDelete = async (platform: string) => {
-    setDeleteTarget(platform);
     try {
       await removePlatform(platform);
     } catch (err: any) {
       alert(`Error: ${err.message}`);
-    } finally {
-      setDeleteTarget(null);
     }
   };
 
   return (
     <>
-      {/* Header */}
       <header className="flex flex-col md:flex-row justify-between items-start md:items-end pb-6">
         <div>
           <h1 className="font-bold text-4xl md:text-5xl tracking-tighter uppercase text-white mb-1">PROFILES</h1>
@@ -149,7 +133,7 @@ export const ProfilesView: React.FC = () => {
             SYS_TIME: {new Date().toISOString().split('T')[1].slice(0, 8)} UTC
           </div>
           <button
-            onClick={refetch}
+            onClick={() => refetch()}
             disabled={loading}
             className="text-zinc-500 hover:text-white transition-colors disabled:opacity-30"
             title="Refresh"
@@ -159,16 +143,13 @@ export const ProfilesView: React.FC = () => {
         </div>
       </header>
 
-      {/* Error Banner */}
       {error && (
         <div className="border border-red-500/40 bg-red-500/5 px-4 py-2 mb-4 text-[10px] tracking-[0.2em] text-red-400 uppercase font-bold">
-          ERR: {error}
+          ERR: {error.message}
         </div>
       )}
 
-      {/* Table */}
       <div className="border border-[#2a2a2a]">
-        {/* Column headers */}
         <div className="grid grid-cols-[2.5rem_minmax(0,1.2fr)_minmax(0,1fr)_5rem] items-center gap-2 px-5 py-3 bg-[#0a0a0a] border-b border-[#2a2a2a]">
           <span />
           <span className="text-[11px] font-bold uppercase tracking-[0.25em] text-zinc-400">PLATFORM</span>
@@ -176,7 +157,6 @@ export const ProfilesView: React.FC = () => {
           <span className="text-[11px] font-bold uppercase tracking-[0.25em] text-zinc-400 text-right pr-2">ACTION</span>
         </div>
 
-        {/* Rows */}
         {loading
           ? Array.from({ length: 2 }).map((_, i) => <SkeletonRow key={i} />)
           : platforms.length === 0
@@ -187,7 +167,7 @@ export const ProfilesView: React.FC = () => {
             )
             : platforms.map((p, i) => {
               const meta = getMeta(p.platform);
-              const isDeleting = deleteTarget === p.platform;
+              const isDeleting = deleting && deletedPlatform === p.platform;
               return (
                 <motion.div
                   key={p.platform}
@@ -197,90 +177,36 @@ export const ProfilesView: React.FC = () => {
                   transition={{ delay: i * 0.07, duration: 0.3 }}
                   className="relative grid grid-cols-[2.5rem_minmax(0,1.2fr)_minmax(0,1fr)_5rem] items-center gap-2 px-5 py-5 border-b border-[#2a2a2a] last:border-b-0 hover:bg-white/[0.03] transition-all duration-300 group cursor-default"
                 >
-                  {/* Left accent bar */}
                   <div className="absolute left-0 top-0 bottom-0 w-[2px] bg-emerald-400 shadow-[0_0_8px_rgba(52,211,153,0.4)] group-hover:shadow-[0_0_12px_rgba(52,211,153,0.7)] transition-all duration-300" />
 
-                  {/* Icon */}
                   <div className="w-9 h-9 border border-[#2a2a2a] flex items-center justify-center bg-[#0d0d0d] group-hover:border-white/30 transition-all duration-300">
                     <meta.icon className="w-4 h-4 text-zinc-500 group-hover:text-white transition-colors duration-300" />
                   </div>
 
-                  {/* Platform */}
                   <span className="text-[13px] font-bold tracking-widest uppercase text-white">{meta.label}</span>
 
-                  {/* Username */}
-                  {editTarget === p.platform ? (
-                    <input
-                      autoFocus
-                      type="text"
-                      value={editUsername}
-                      onChange={e => setEditUsername(e.target.value)}
-                      onKeyDown={e => {
-                        if (e.key === 'Enter') handleEditSubmit(p.platform, editUsername);
-                        if (e.key === 'Escape') setEditTarget(null);
-                      }}
-                      className="bg-black border border-[#2a2a2a] focus:border-white/50 outline-none px-2 py-1 text-sm font-mono text-white placeholder:text-zinc-600 transition-colors w-full"
-                    />
-                  ) : (
-                    <span className="text-[13px] font-mono text-zinc-500 group-hover:text-zinc-300 transition-colors truncate">
-                      {p.username}
-                    </span>
-                  )}
+                  <span className="text-[13px] font-mono text-zinc-500 group-hover:text-zinc-300 transition-colors truncate">
+                    {p.username}
+                  </span>
 
-                  {/* Actions */}
                   <div className="flex justify-end gap-3 pr-2">
-                    {editTarget === p.platform ? (
-                      <>
-                        <button
-                          onClick={() => handleEditSubmit(p.platform, editUsername)}
-                          disabled={submitting || !editUsername.trim()}
-                          className="text-emerald-400 hover:text-emerald-300 transition-colors disabled:opacity-30"
-                          title="Save"
-                        >
-                          {submitting ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <span className="text-[10px] font-bold tracking-widest uppercase">Save</span>}
-                        </button>
-                        <button
-                          onClick={() => setEditTarget(null)}
-                          disabled={submitting}
-                          className="text-zinc-500 hover:text-white transition-colors disabled:opacity-30"
-                          title="Cancel"
-                        >
-                          <span className="text-[10px] font-bold tracking-widest uppercase">X</span>
-                        </button>
-                      </>
-                    ) : (
-                      <>
-                        <button
-                          onClick={() => {
-                            setEditTarget(p.platform);
-                            setEditUsername(p.username);
-                          }}
-                          disabled={submitting}
-                          className="opacity-0 group-hover:opacity-100 transition-opacity text-zinc-600 hover:text-white disabled:opacity-30 flex items-center gap-1.5"
-                          title={`Edit ${meta.label}`}
-                        >
-                          <Edit2 className="w-3.5 h-3.5" />
-                        </button>
-                        <button
-                          onClick={() => handleDelete(p.platform)}
-                          disabled={submitting}
-                          className="opacity-0 group-hover:opacity-100 transition-opacity text-zinc-600 hover:text-red-400 disabled:opacity-30 flex items-center gap-1.5"
-                          title={`Remove ${meta.label}`}
-                        >
-                          {isDeleting
-                            ? <Loader2 className="w-3.5 h-3.5 animate-spin" />
-                            : <Trash2 className="w-3.5 h-3.5" />}
-                        </button>
-                      </>
-                    )}
+                    <button
+                      onClick={() => handleDelete(p.platform)}
+                      disabled={deleting}
+                      className="opacity-0 group-hover:opacity-100 transition-opacity text-zinc-600 hover:text-red-400 disabled:opacity-30 flex items-center gap-1.5"
+                      title={`Remove ${meta.label}`}
+                    >
+                      {isDeleting
+                        ? <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                        : <Trash2 className="w-3.5 h-3.5" />}
+                    </button>
                   </div>
                 </motion.div>
               );
             })}
       </div>
 
-      {/* Add platform panel */}
-      <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.3 }}>
+      <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.3 }} className="mt-4">
         <AnimatePresence mode="wait">
           {!showAdd ? (
             <motion.button
@@ -299,7 +225,7 @@ export const ProfilesView: React.FC = () => {
                 platform={selectedPlatform}
                 onSubmit={handleAddSubmit}
                 onCancel={() => { setSelectedPlatform(null); setShowAdd(false); }}
-                submitting={submitting}
+                submitting={creating}
               />
             </motion.div>
           ) : (

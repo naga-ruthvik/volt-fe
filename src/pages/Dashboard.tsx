@@ -4,6 +4,7 @@ import { Sidebar, type DashboardPage } from '../components/dashboard/Sidebar';
 import { AnalyticsView } from '../components/dashboard/AnalyticsView';
 import { ProfilesView } from '../components/dashboard/ProfilesView';
 import { GenerationsView } from '../components/dashboard/GenerationsView';
+import { FeatureErrorBoundary } from '../shared/components/FeatureErrorBoundary';
 
 export const Dashboard: React.FC = () => {
   const [activePage, setActivePage] = useState<DashboardPage>('analytics');
@@ -46,7 +47,9 @@ export const Dashboard: React.FC = () => {
       {/* Main Content */}
       <main className="flex-1 md:ml-64 mt-12 md:mt-0 p-6 overflow-y-auto relative z-10 w-full">
         <div className="max-w-[1200px] mx-auto space-y-6">
-          {renderPage()}
+          <FeatureErrorBoundary>
+            {renderPage()}
+          </FeatureErrorBoundary>
         </div>
       </main>
     </div>

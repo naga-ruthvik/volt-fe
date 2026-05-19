@@ -5,14 +5,14 @@
 
 import React from 'react';
 import { Heatmap } from '../Heatmap';
-import { useMetrics } from '../../hooks/useMetrics';
+import { useMetrics } from '../../features/metrics/hooks/useMetrics';
 
 const Skeleton: React.FC<{ className?: string }> = ({ className = '' }) => (
   <div className={`animate-pulse bg-[#1a1a1a] ${className}`} />
 );
 
 export const AnalyticsView: React.FC = () => {
-  const { data, loading, error } = useMetrics();
+  const { data, isLoading: loading, error } = useMetrics();
 
   const metrics = data?.user_metrics;
 
@@ -52,7 +52,7 @@ export const AnalyticsView: React.FC = () => {
       {/* Error Banner */}
       {error && (
         <div className="border border-red-500/40 bg-red-500/5 px-4 py-2 text-[10px] tracking-[0.2em] text-red-400 uppercase font-bold">
-          ERR: {error}
+          ERR: {error.message}
         </div>
       )}
 

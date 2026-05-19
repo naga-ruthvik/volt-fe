@@ -6,9 +6,8 @@
 import React, { useState } from 'react';
 import { motion } from 'motion/react';
 import { Zap, RefreshCw, Loader2, CheckCircle2 } from 'lucide-react';
-import { useMetrics } from '../../hooks/useMetrics';
-import { usePlatforms } from '../../hooks/usePlatforms';
-import type { GenerationMetric } from '../../services/metrics';
+import { useMetrics, useTriggerGenerate } from '../../features/metrics/hooks/useMetrics';
+import type { GenerationMetric } from '../../features/metrics/services/metrics.api';
 
 const STATUS_STYLES = {
   success: {
@@ -101,8 +100,8 @@ const GenerationRow: React.FC<{ gen: GenerationMetric; index: number }> = ({ gen
 };
 
 export const GenerationsView: React.FC = () => {
-  const { data, loading, error, refetch } = useMetrics();
-  const { generate, submitting: generating } = usePlatforms();
+  const { data, isLoading: loading, error, refetch } = useMetrics();
+  const { mutateAsync: generate, isPending: generating } = useTriggerGenerate();
   const [genStatus, setGenStatus] = useState<'idle' | 'ok' | 'err'>('idle');
   const [genError, setGenError] = useState<string | null>(null);
 
@@ -142,7 +141,7 @@ export const GenerationsView: React.FC = () => {
             SYS_TIME: {new Date().toISOString().split('T')[1].slice(0, 8)} UTC
           </div>
           <button
-            onClick={refetch}
+            onClick={() => refetch()}
             disabled={loading}
             className="text-zinc-500 hover:text-white transition-colors disabled:opacity-30"
             title="Refresh"
@@ -155,7 +154,7 @@ export const GenerationsView: React.FC = () => {
       {/* Error Banner */}
       {error && (
         <div className="border border-red-500/40 bg-red-500/5 px-4 py-2 mb-4 text-[10px] tracking-[0.2em] text-red-400 uppercase font-bold">
-          ERR: {error}
+          ERR: {error.message}
         </div>
       )}
 
