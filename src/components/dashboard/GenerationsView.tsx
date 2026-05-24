@@ -10,12 +10,12 @@ import { useMetrics, useTriggerGenerate } from '../../features/metrics/hooks/use
 import type { GenerationMetric } from '../../features/metrics/services/metrics.api';
 
 const STATUS_STYLES = {
-  success: {
+  completed: {
     dot: 'bg-emerald-400 shadow-[0_0_6px_rgba(52,211,153,0.7)]',
     text: 'text-emerald-400',
     bg: 'bg-emerald-400/10',
     bar: 'bg-emerald-400 shadow-[0_0_8px_rgba(52,211,153,0.5)] group-hover:shadow-[0_0_12px_rgba(52,211,153,0.8)]',
-    label: 'SUCCESS',
+    label: 'COMPLETED',
   },
   failed: {
     dot: 'bg-red-400 shadow-[0_0_6px_rgba(248,113,113,0.7)]',
@@ -120,7 +120,7 @@ export const GenerationsView: React.FC = () => {
   };
 
   const generations = data?.generation_metrics ?? [];
-  const successCount = generations.filter(g => g.status === 'success').length;
+  const successCount = generations.filter(g => g.status === 'completed').length;
   const failedCount = generations.filter(g => g.status === 'failed').length;
   const pendingCount = generations.filter(g => g.status === 'pending').length;
 
@@ -133,7 +133,7 @@ export const GenerationsView: React.FC = () => {
           <p className="text-[10px] tracking-[0.3em] text-zinc-400 uppercase font-bold">
             {loading
               ? 'LOADING...'
-              : `${generations.length} TOTAL · ${successCount} SUCCESS · ${failedCount} FAILED · ${pendingCount} PENDING`}
+              : `${generations.length} TOTAL · ${successCount} COMPLETED · ${failedCount} FAILED · ${pendingCount} PENDING`}
           </p>
         </div>
         <div className="flex items-center gap-4 mt-2 md:mt-0">

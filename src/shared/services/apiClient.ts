@@ -20,7 +20,7 @@ export function clearAuthTokens(): void {
 // ── API Client ──
 export const apiClient: AxiosInstance = axios.create({
   baseURL: API_BASE,
-  timeout: 10000,
+  timeout: 60000,
   headers: { 'Content-Type': 'application/json' },
   withCredentials: true, // Crucial for receiving/sending HttpOnly cookies (refresh token)
 });
