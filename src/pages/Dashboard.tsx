@@ -4,6 +4,7 @@ import { Sidebar, type DashboardPage } from '../components/dashboard/Sidebar';
 import { AnalyticsView } from '../components/dashboard/AnalyticsView';
 import { ProfilesView } from '../components/dashboard/ProfilesView';
 import { GenerationsView } from '../components/dashboard/GenerationsView';
+import { SettingsView } from '../components/dashboard/SettingsView';
 import { FeatureErrorBoundary } from '../shared/components/FeatureErrorBoundary';
 
 export const Dashboard: React.FC = () => {
@@ -19,11 +20,7 @@ export const Dashboard: React.FC = () => {
       case 'generations':
         return <GenerationsView />;
       case 'settings':
-        return (
-          <div className="flex items-center justify-center h-64 text-zinc-500 text-[10px] font-bold uppercase tracking-[0.3em]">
-            SETTINGS_MODULE // UNDER_CONSTRUCTION
-          </div>
-        );
+        return <SettingsView />;
       default:
         return <AnalyticsView />;
     }

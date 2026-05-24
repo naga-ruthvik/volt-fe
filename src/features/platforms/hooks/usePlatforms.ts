@@ -51,3 +51,33 @@ export function useDeletePlatform() {
     },
   });
 }
+
+export function useUpdatePlatform() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: ({ platform, username }: { platform: string; username: string }) =>
+      platformsApi.updatePlatform(platform, username),
+    onMutate: async ({ platform, username }) => {
+      await queryClient.cancelQueries({ queryKey: platformsKeys.all });
+      const previousPlatforms = queryClient.getQueryData<Platform[]>(platformsKeys.all);
+
+      if (previousPlatforms) {
+        queryClient.setQueryData<Platform[]>(
+          platformsKeys.all,
+          previousPlatforms.map(p => p.platform === platform ? { ...p, username } : p)
+        );
+      }
+
+      return { previousPlatforms };
+    },
+    onError: (_err, _variables, context) => {
+      if (context?.previousPlatforms) {
+        queryClient.setQueryData(platformsKeys.all, context.previousPlatforms);
+      }
+    },
+    onSettled: () => {
+      queryClient.invalidateQueries({ queryKey: platformsKeys.all });
+    },
+  });
+}

@@ -7,9 +7,9 @@ import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import {
   Github, Code, Trophy, Braces, Award, Cpu,
-  Plus, ChevronRight, Trash2, RefreshCw, Loader2,
+  Plus, ChevronRight, Trash2, RefreshCw, Loader2, Pencil, Check, X,
 } from 'lucide-react';
-import { usePlatforms, useCreatePlatform, useDeletePlatform } from '../../features/platforms/hooks/usePlatforms';
+import { usePlatforms, useCreatePlatform, useDeletePlatform, useUpdatePlatform } from '../../features/platforms/hooks/usePlatforms';
 
 // ── Platform metadata ─────────────────────────────────────────────────────────
 
@@ -89,9 +89,12 @@ export const ProfilesView: React.FC = () => {
   const { data: platforms = [], isLoading: loading, error, refetch } = usePlatforms();
   const { mutateAsync: addPlatform, isPending: creating } = useCreatePlatform();
   const { mutateAsync: removePlatform, isPending: deleting, variables: deletedPlatform } = useDeletePlatform();
+  const { mutateAsync: updatePlatform, isPending: updating, variables: updatedPlatform } = useUpdatePlatform();
   
   const [showAdd, setShowAdd] = useState(false);
   const [selectedPlatform, setSelectedPlatform] = useState<string | null>(null);
+  const [editingPlatform, setEditingPlatform] = useState<string | null>(null);
+  const [editingUsername, setEditingUsername] = useState('');
 
   const linked = new Set(platforms.map(p => p.platform.toLowerCase()));
   const available = ALL_SUPPORTED.filter(p => !linked.has(p));
@@ -114,6 +117,28 @@ export const ProfilesView: React.FC = () => {
   const handleDelete = async (platform: string) => {
     try {
       await removePlatform(platform);
+    } catch (err: any) {
+      alert(`Error: ${err.message}`);
+    }
+  };
+
+  const handleStartEdit = (platform: string, username: string) => {
+    setEditingPlatform(platform);
+    setEditingUsername(username);
+  };
+
+  const handleCancelEdit = () => {
+    setEditingPlatform(null);
+    setEditingUsername('');
+  };
+
+  const handleEditSubmit = async () => {
+    if (!editingPlatform) return;
+    const nextUsername = editingUsername.trim();
+    if (!nextUsername) return;
+    try {
+      await updatePlatform({ platform: editingPlatform, username: nextUsername });
+      handleCancelEdit();
     } catch (err: any) {
       alert(`Error: ${err.message}`);
     }
@@ -168,6 +193,8 @@ export const ProfilesView: React.FC = () => {
             : platforms.map((p, i) => {
               const meta = getMeta(p.platform);
               const isDeleting = deleting && deletedPlatform === p.platform;
+              const isEditing = editingPlatform === p.platform;
+              const isUpdating = updating && updatedPlatform?.platform === p.platform;
               return (
                 <motion.div
                   key={p.platform}
@@ -185,21 +212,66 @@ export const ProfilesView: React.FC = () => {
 
                   <span className="text-[13px] font-bold tracking-widest uppercase text-white">{meta.label}</span>
 
-                  <span className="text-[13px] font-mono text-zinc-500 group-hover:text-zinc-300 transition-colors truncate">
-                    {p.username}
-                  </span>
+                  {isEditing ? (
+                    <input
+                      autoFocus
+                      value={editingUsername}
+                      onChange={e => setEditingUsername(e.target.value)}
+                      onKeyDown={e => {
+                        if (e.key === 'Enter') handleEditSubmit();
+                        if (e.key === 'Escape') handleCancelEdit();
+                      }}
+                      className="bg-black border border-[#2a2a2a] focus:border-white/50 outline-none px-2 py-1 text-[13px] font-mono text-white placeholder:text-zinc-600 transition-colors"
+                    />
+                  ) : (
+                    <span className="text-[13px] font-mono text-zinc-500 group-hover:text-zinc-300 transition-colors truncate">
+                      {p.username}
+                    </span>
+                  )}
 
                   <div className="flex justify-end gap-3 pr-2">
-                    <button
-                      onClick={() => handleDelete(p.platform)}
-                      disabled={deleting}
-                      className="opacity-0 group-hover:opacity-100 transition-opacity text-zinc-600 hover:text-red-400 disabled:opacity-30 flex items-center gap-1.5"
-                      title={`Remove ${meta.label}`}
-                    >
-                      {isDeleting
-                        ? <Loader2 className="w-3.5 h-3.5 animate-spin" />
-                        : <Trash2 className="w-3.5 h-3.5" />}
-                    </button>
+                    {isEditing ? (
+                      <>
+                        <button
+                          onClick={handleEditSubmit}
+                          disabled={updating || !editingUsername.trim()}
+                          className="text-zinc-500 hover:text-emerald-400 disabled:opacity-30 flex items-center gap-1.5"
+                          title={`Save ${meta.label} username`}
+                        >
+                          {isUpdating
+                            ? <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                            : <Check className="w-3.5 h-3.5" />}
+                        </button>
+                        <button
+                          onClick={handleCancelEdit}
+                          className="text-zinc-600 hover:text-white flex items-center gap-1.5"
+                          title="Cancel edit"
+                        >
+                          <X className="w-3.5 h-3.5" />
+                        </button>
+                      </>
+                    ) : (
+                      <>
+                        <button
+                          onClick={() => handleStartEdit(p.platform, p.username)}
+                          disabled={deleting}
+                          className="opacity-0 group-hover:opacity-100 transition-opacity text-zinc-600 hover:text-white disabled:opacity-30 flex items-center gap-1.5"
+                          title={`Edit ${meta.label} username`}
+                        >
+                          <Pencil className="w-3.5 h-3.5" />
+                        </button>
+                        <button
+                          onClick={() => handleDelete(p.platform)}
+                          disabled={deleting}
+                          className="opacity-0 group-hover:opacity-100 transition-opacity text-zinc-600 hover:text-red-400 disabled:opacity-30 flex items-center gap-1.5"
+                          title={`Remove ${meta.label}`}
+                        >
+                          {isDeleting
+                            ? <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                            : <Trash2 className="w-3.5 h-3.5" />}
+                        </button>
+                      </>
+                    )}
                   </div>
                 </motion.div>
               );

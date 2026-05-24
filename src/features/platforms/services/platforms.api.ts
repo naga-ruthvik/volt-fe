@@ -9,6 +9,9 @@ export const platformSchema = z.object({
 export type Platform = z.infer<typeof platformSchema>;
 
 export const platformListSchema = z.array(platformSchema);
+const platformUpdateSchema = z.object({
+  username: z.string(),
+});
 
 export const platformsApi = {
   listPlatforms: async (): Promise<Platform[]> => {
@@ -19,6 +22,11 @@ export const platformsApi = {
   createPlatform: async (platform: string, username: string): Promise<Platform> => {
     const { data } = await apiClient.post('/platforms/', { platform, username });
     return platformSchema.parse(data);
+  },
+
+  updatePlatform: async (platform: string, username: string): Promise<{ username: string }> => {
+    const { data } = await apiClient.patch(`/platforms/${platform}/`, { username });
+    return platformUpdateSchema.parse(data);
   },
 
   deletePlatform: async (platform: string): Promise<void> => {
