@@ -19,7 +19,6 @@ import {
 } from "lucide-react";
 import { useState, useEffect, type FC, useRef } from "react";
 import { motion, useInView } from "motion/react";
-import { Link } from "react-router-dom";
 import Noise from "../components/Noise";
 import { LoginModal } from "../features/authentication/components/LoginModal";
 import { Heatmap } from "../components/Heatmap";

@@ -2,6 +2,7 @@
  * Sidebar — Volt Dashboard navigation panel.
  * Brutalist terminal-style sidebar with active page highlighting and logout.
  */
+"use client";
 
 import React from 'react';
 import {
@@ -12,7 +13,7 @@ import {
   Settings,
   Power,
 } from 'lucide-react';
-import { useNavigate } from 'react-router-dom';
+import { useRouter } from 'next/navigation';
 import { logout, getStoredUser } from '../../services/auth';
 
 export type DashboardPage = 'dashboard' | 'analytics' | 'profiles' | 'generations' | 'settings';
@@ -31,12 +32,12 @@ const NAV_ITEMS: { id: DashboardPage; label: string; icon: React.FC<{ className?
 ];
 
 export const Sidebar: React.FC<SidebarProps> = ({ activePage, onPageChange }) => {
-  const navigate = useNavigate();
+  const router = useRouter();
   const user = getStoredUser();
 
   const handleLogout = async () => {
     await logout();
-    navigate('/');
+    router.push('/');
   };
 
   return (

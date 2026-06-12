@@ -1,12 +1,12 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useRouter } from 'next/navigation';
 import { authApi } from '../services/auth.api';
 import { storeAccessToken } from '../../../shared/services/apiClient';
 
 export type AuthStep = 'email' | 'otp' | 'username';
 
 export function useAuthFlow(isOpen: boolean, onClose: () => void) {
-  const navigate = useNavigate();
+  const router = useRouter();
   const [step, setStep] = useState<AuthStep>('email');
   const [email, setEmail] = useState('');
   const [otp, setOtp] = useState(['', '', '', '', '', '']);
@@ -98,7 +98,7 @@ export function useAuthFlow(isOpen: boolean, onClose: () => void) {
           isNewUser: false,
         }));
         setSuccess('Access granted');
-        setTimeout(() => { onClose(); navigate('/dashboard'); }, 800);
+        setTimeout(() => { onClose(); router.push('/dashboard'); }, 800);
       }
     } else {
       setError(res.message || 'Invalid OTP');
@@ -120,7 +120,7 @@ export function useAuthFlow(isOpen: boolean, onClose: () => void) {
     if (res.success) {
       localStorage.setItem('volt_user', JSON.stringify({ email, username: res.username || trimmed, isNewUser: false }));
       setSuccess('Profile created');
-      setTimeout(() => { onClose(); navigate('/dashboard'); }, 800);
+      setTimeout(() => { onClose(); router.push('/dashboard'); }, 800);
     } else {
       setError(res.message || 'Username unavailable');
     }
