@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Bell, Sliders, Power } from 'lucide-react';
 import { Sidebar, type DashboardPage } from '../components/dashboard/Sidebar';
+import { DashboardView } from '../components/dashboard/DashboardView';
 import { AnalyticsView } from '../components/dashboard/AnalyticsView';
 import { ProfilesView } from '../components/dashboard/ProfilesView';
 import { GenerationsView } from '../components/dashboard/GenerationsView';
@@ -13,6 +14,7 @@ export const Dashboard: React.FC = () => {
   const renderPage = () => {
     switch (activePage) {
       case 'dashboard':
+        return <DashboardView />;
       case 'analytics':
         return <AnalyticsView />;
       case 'profiles':
